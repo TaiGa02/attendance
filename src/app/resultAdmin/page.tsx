@@ -12,6 +12,11 @@ interface Employee {
   monthly_time: number;
 }
 
+const useSuspenseSearchParams = async () => {
+  const searchParams = await useSearchParams();
+  return searchParams;
+};
+
 async function fetchResult(keyword: string | null) {
   try {
     if (!keyword) {
@@ -38,15 +43,22 @@ async function fetchResult(keyword: string | null) {
 
 export default function Admin() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [keyword, setKeyword] = useState<string | null>(
-    searchParams.get("keyword")
-  );
+
+  // useSuspenseSearchParams関数を即時実行関数内で呼び出し
+  const searchParams = useSuspenseSearchParams();
+
+  const [keyword, setKeyword] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Promiseから値を取り出すために.thenを使用
+    searchParams.then((params) => {
+      setKeyword(params.get("keyword"));
+    });
+  }, [searchParams]);
 
   const resultEmployees = useSWR(["/api/admin", keyword], () => fetchResult(keyword));
 
   const handleSubmit = (newKeyword: string) => {
-    // 検索ボタンがクリックされたときに呼ばれるハンドラー
     setKeyword(newKeyword);
     router.push(`/resultAdmin?keyword=${newKeyword}`);
   };
