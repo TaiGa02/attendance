@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Nav from "../../components/Nav";
 import useSWR from "swr";
@@ -71,6 +71,7 @@ export default function Admin() {
 
   return (
     <>
+     <Suspense fallback={<div>Loading...</div>}>
       <Nav onSubmit={handleSubmit} />
       <main>
         <div className="flex flex-col text-center">
@@ -94,6 +95,7 @@ export default function Admin() {
           </table>
         </div>
       </main>
+      </Suspense>
     </>
   );
 }
