@@ -17,6 +17,12 @@ interface Employee {
     endTime: Date;
   }
 
+  const useSuspenseSearchParams = async () => {
+    const searchParams = await useSearchParams();
+    return searchParams;
+  };
+
+
   async function fetchResult(keyword: string | null) {
     try {
       if (!keyword) {
@@ -46,10 +52,16 @@ export default function ResultOffice() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [hoveredEmployee, setHoveredEmployee] = useState<Employee | null>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [keyword, setKeyword] = useState<string | null>(
-    searchParams.get("keyword")
-  );
+  const searchParams = useSuspenseSearchParams();
+
+  const [keyword, setKeyword] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Promiseから値を取り出すために.thenを使用
+    searchParams.then((params) => {
+      setKeyword(params.get("keyword"));
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,7 +87,7 @@ export default function ResultOffice() {
         clearInterval(interval);
         clearInterval(midnightResetInterval);
     };
-  }, []);
+  }, [keyword]);
 
   const handleMouseEnter = (employee: Employee) => {
     setHoveredEmployee(employee);
