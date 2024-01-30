@@ -48,15 +48,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       if (remote) {
         await sendEmail(employee.email, "本日の予定", "本日の予定作業を送付してください");
 
-      // リモートワーク開始から7時間後にメールをスケジュール
-        const emailJob = schedule.scheduleJob(new Date(startTime.getTime() + 7 * 60 * 60 * 1000), async () => {
-        await sendEmail(employee.email, "本日の作業", "本日の行った業務を送付してください");
-        });
       }
-
-      const checkOverTime = schedule.scheduleJob(new Date(startTime.getTime() + 8 * 60 * 60 * 1000), async () => {
-        await sendEmail(employee.email, "業務時間確認", "勤務開始から８時間たっています。打刻を忘れていませんか？本日は残業されますか？");
-      });
 
       return NextResponse.json({ message: "Success", attendance }, { status: 200 });
     } else {
