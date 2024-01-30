@@ -6,92 +6,95 @@ import Nav from "../../components/Nav";
 import useSWR from "swr";
 
 interface Employee {
-  id: number;
-  name: string;
-  email: string;
-  work: boolean;
-  rest: boolean;
-  remote: boolean;
-  out: boolean;
-  startTime: Date;
-  endTime: Date;
-}
+    id: number;
+    name: string;
+    email: string;
+    work: boolean;
+    rest: boolean;
+    remote: boolean;
+    out: boolean;
+    startTime: Date;
+    endTime: Date;
+  }
 
-const useSuspenseSearchParams = () => {
-  const [searchParams, setSearchParams] = useState<URLSearchParams | null>(null);
+  const useSuspenseSearchParams = async () => {
+    const searchParams = await useSearchParams();
+    return searchParams;
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const params = useSearchParams();
-      setSearchParams(params || null); // Ensure that params is not null
-    };
 
-    fetchData();
-  }, []); 
-
-  return searchParams;
-};
-
-async function fetchResult(keyword: string | null) {
-  try {
-    if (!keyword) {
-      const result = await fetch(`/api/admin`);
+  async function fetchResult(keyword: string | null) {
+    try {
+      if (!keyword) {
+        const result = await fetch(`/api/admin`);
+        const data = await result.json();
+        return data.resultEmployee ? data.resultEmployee.sort((a: Employee, b: Employee) => a.id - b.id) : [];
+      }
+  
+      const result = await fetch(`/api/admin`, {
+        method: "POST",
+        body: JSON.stringify({ keyword }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
       const data = await result.json();
       return data.resultEmployee ? data.resultEmployee.sort((a: Employee, b: Employee) => a.id - b.id) : [];
+    } catch (error) {
+      console.error("Error fetching results:", error);
+      return [];
     }
-
-    const result = await fetch(`/api/admin`, {
-      method: "POST",
-      body: JSON.stringify({ keyword }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await result.json();
-    return data.resultEmployee ? data.resultEmployee.sort((a: Employee, b: Employee) => a.id - b.id) : [];
-  } catch (error) {
-    console.error("Error fetching results:", error);
-    return [];
   }
-}
+  
 
-export default function ResultOffice() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [hoveredEmployee, setHoveredEmployee] = useState<Employee | null>(null);
-  const router = useRouter();
-  const searchParams = useSuspenseSearchParams();
+  export default function ResultOffice() {
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [hoveredEmployee, setHoveredEmployee] = useState<Employee | null>(null);
+    const router = useRouter();
+    const searchParams = useSuspenseSearchParams();
+    const [keyword, setKeyword] = useState<string | null>(null);
 
-  const [keyword, setKeyword] = useState<string | null>(null);
+    useEffect(() => {
+        // Promiseから値を取り出すために.thenを使用
+        searchParams.then((params) => {
+          setKeyword(params.get("keyword"));
+        });
+      }, [searchParams]);
 
-  useEffect(() => {
-    if (searchParams) {
-      setKeyword(searchParams.get("keyword"));
-    }
-  }, [searchParams]);
+      const resultEmployees = useSWR(["/api/admin", keyword], () => fetchResult(keyword));
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchResult(keyword);
-      const sortedData = data.sort((a: Employee, b: Employee) => a.id - b.id);
-      setEmployees(sortedData);
-    };
-
-    fetchData();
-
-    const interval = setInterval(fetchData, 1 * 60 * 1000);
-
-    const resetDailyData = async () => {
-      await fetch(`/api/resetDailyData`, { method: 'POST' });
-    };
-
-    const midnightResetInterval = setInterval(resetDailyData, 1 * 60 * 1000);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(midnightResetInterval);
-    };
-  }, [keyword]);
+      const handleSubmit = (newKeyword: string) => {
+        // 検索ボタンがクリックされたときに呼ばれるハンドラー
+        setKeyword(newKeyword);
+        router.push(`/resultOffice?keyword=${newKeyword}`);
+      };
+  
+    useEffect(() => {
+      const fetchData = async () => {
+  
+          const data = await fetchResult(keyword);
+          const sortedData = data.sort((a: Employee, b: Employee) => a.id - b.id);
+          setEmployees(sortedData);
+        };
+      
+  
+        fetchData();
+  
+      const interval = setInterval(fetchData, 1 * 60 * 1000);
+  
+      const resetDailyData = async () => {
+        await fetch(`/api/resetDailyData`, { method: 'POST' });
+      };
+  
+      const midnightResetInterval = setInterval(resetDailyData, 1 * 60 * 1000);
+  
+      return () => {
+        clearInterval(interval);
+        clearInterval(midnightResetInterval);
+      };
+    }, [keyword]);
+  
 
   const handleMouseEnter = (employee: Employee) => {
     setHoveredEmployee(employee);
@@ -101,12 +104,6 @@ export default function ResultOffice() {
     setHoveredEmployee(null);
   };
 
-  const resultEmployees = useSWR(["/api/admin", keyword], () => fetchResult(keyword));
-
-  const handleSubmit = (newKeyword: string) => {
-    setKeyword(newKeyword);
-    router.push(`/resultOffice?keyword=${newKeyword}`);
-  };
 
   const renderStatusIcon = (employee: Employee) => {
     if (employee.work && !employee.remote && !employee.rest && !employee.out) {
