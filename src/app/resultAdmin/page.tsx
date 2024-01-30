@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Nav from "../../components/Nav";
 import useSWR from "swr";
@@ -11,7 +11,6 @@ interface Employee {
   monthly_overtime: number;
   monthly_time: number;
 }
-
 
 async function fetchResult(keyword: string | null) {
   try {
@@ -54,7 +53,7 @@ export default function Admin() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchResult( keyword );
+      const data = await fetchResult(keyword);
     };
 
     fetchData();
@@ -67,11 +66,10 @@ export default function Admin() {
     return () => {
       clearInterval(monthlyInterval);
     };
-  }, []);
+  }, [keyword]);
 
   return (
     <>
-     <Suspense fallback={<div>Loading...</div>}>
       <Nav onSubmit={handleSubmit} />
       <main>
         <div className="flex flex-col text-center">
@@ -95,7 +93,6 @@ export default function Admin() {
           </table>
         </div>
       </main>
-      </Suspense>
     </>
   );
 }
