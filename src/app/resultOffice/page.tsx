@@ -28,7 +28,7 @@ interface Employee {
       if (!keyword) {
         const result = await fetch(`/api/admin`);
         const data = await result.json();
-        return data.resultEmployee ? data.resultEmployee.sort((a: Employee, b: Employee) => a.id - b.id) : [];
+        return data.resultEmployee.sort((a: Employee, b: Employee) => a.id - b.id);
       }
   
       const result = await fetch(`/api/admin`, {
@@ -40,7 +40,7 @@ interface Employee {
       });
   
       const data = await result.json();
-      return data.resultEmployee ? data.resultEmployee.sort((a: Employee, b: Employee) => a.id - b.id) : [];
+      return data.resultEmployee.sort((a: Employee, b: Employee) => a.id - b.id);
     } catch (error) {
       console.error("Error fetching results:", error);
       return [];
@@ -49,7 +49,6 @@ interface Employee {
   
 
   export default function ResultOffice() {
-    const [employees, setEmployees] = useState<Employee[]>([]);
     const [hoveredEmployee, setHoveredEmployee] = useState<Employee | null>(null);
     const router = useRouter();
     const searchParams = useSuspenseSearchParams();
@@ -74,8 +73,6 @@ interface Employee {
       const fetchData = async () => {
   
           const data = await fetchResult(keyword);
-          const sortedData = data.sort((a: Employee, b: Employee) => a.id - b.id);
-          setEmployees(sortedData);
         };
       
   
@@ -155,7 +152,7 @@ interface Employee {
               </tr>
             </thead>
             <tbody>
-              {employees.map((employee: Employee) => (
+              {resultEmployees.data?.map((employee: Employee) => (
                 <tr key={employee.id} className="border-b">
                 <td
                   className="border-r p-2"
