@@ -48,46 +48,47 @@ interface Employee {
   }
   
 
-export default function ResultOffice() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [hoveredEmployee, setHoveredEmployee] = useState<Employee | null>(null);
-  const router = useRouter();
-  const searchParams = useSuspenseSearchParams();
-
-  const [keyword, setKeyword] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Promiseから値を取り出すために.thenを使用
-    searchParams.then((params) => {
-      setKeyword(params.get("keyword"));
-    });
-  }, [searchParams]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchResult( keyword );
-
-      console.log(data);
-
-      // 初回のデータ取得時にid順でソート
-      const sortedData = data.sort((a: Employee, b: Employee) => a.id - b.id);
-      setEmployees(sortedData);
-    };
-
-    fetchData();
-
-    const interval = setInterval(fetchData, 1 * 60 * 1000);
-
-    const resetDailyData = async () => {
+  export default function ResultOffice() {
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [hoveredEmployee, setHoveredEmployee] = useState<Employee | null>(null);
+    const router = useRouter();
+    const searchParams = useSuspenseSearchParams();
+    const [keyword, setKeyword] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const params = await searchParams;
+          setKeyword(params.get("keyword"));
+  
+          const data = await fetchResult(keyword);
+          const sortedData = data.sort((a: Employee, b: Employee) => a.id - b.id);
+          setEmployees(sortedData);
+        } catch (error) {
+          console.error("データの取得中にエラーが発生しました:", error);
+        }
+      };
+  
+      if (!mounted) {
+        fetchData();
+        setMounted(true);
+      }
+  
+      const interval = setInterval(fetchData, 1 * 60 * 1000);
+  
+      const resetDailyData = async () => {
         await fetch(`/api/resetDailyData`, { method: 'POST' });
       };
-
-    const midnightResetInterval = setInterval(resetDailyData, 1 * 60 * 1000);
-    return () => {
+  
+      const midnightResetInterval = setInterval(resetDailyData, 1 * 60 * 1000);
+  
+      return () => {
         clearInterval(interval);
         clearInterval(midnightResetInterval);
-    };
-  }, [keyword]);
+      };
+    }, [keyword, mounted]);
+  
 
   const handleMouseEnter = (employee: Employee) => {
     setHoveredEmployee(employee);
