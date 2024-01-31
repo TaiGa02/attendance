@@ -1,6 +1,6 @@
 - これはある会社を想定した勤怠管理アプリです
 - vercelのurl:https://attendance-drab.vercel.app/
-- ※追記vercelでの環境上サーバーサイドはUTCで時間が登録されている（日本時間と時差が9時間ほどある）
+- ※追記vercelでの環境上サーバーサイドはUTCで時間が登録されている（日本時間と時差が9時間ほどある）日付が変わると打刻を消すが、時差の関係上日本時間の午前９時に機能する
 - supabase https://supabase.com/dashboard/project/ffezlqgzrptsgmmcrrcf
 
 
