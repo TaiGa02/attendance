@@ -1,5 +1,8 @@
-これはある会社を想定した勤怠管理アプリです
-vercelのurl:https://attendance-drab.vercel.app/
+- これはある会社を想定した勤怠管理アプリです
+- vercelのurl:https://attendance-drab.vercel.app/
+- ※追記vercelでの環境上サーバーサイドはUTCで時間が登録されている（日本時間と時差が9時間ほどある）
+- supabase https://supabase.com/dashboard/project/ffezlqgzrptsgmmcrrcf
+
 
 ### 使用技術
 - Next.js
