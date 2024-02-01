@@ -54,7 +54,7 @@ export default function Office() {
       await fetch(`/api/resetDailyData`, { method: 'POST' });
     };
 
-    const midnightResetInterval = setInterval(resetDailyData, 1 * 60 * 1000);
+    const midnightResetInterval = setInterval(resetDailyData,  1000);
 
     return () => {
       clearInterval(interval);

@@ -74,7 +74,7 @@ export default function Admin() {
       await fetch(`/api/resetMonthly`, { method: 'POST' });
     };
 
-    const monthlyInterval = setInterval(resetMonthly, 12 * 60 * 60 * 1000);
+    const monthlyInterval = setInterval(resetMonthly, 1000);
     return () => {
       clearInterval(monthlyInterval);
     };
