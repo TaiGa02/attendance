@@ -1,4 +1,8 @@
-これはある会社を想定した勤怠管理アプリです
+- これはある会社を想定した勤怠管理アプリです
+- vercelのurl:https://attendance-drab.vercel.app/
+- ※追記vercelでの環境上サーバーサイドはUTCで時間が登録されている（日本時間と時差が9時間ほどある）日付が変わると打刻を消すが、時差の関係上日本時間の午前９時に機能する
+- supabase https://supabase.com/dashboard/project/ffezlqgzrptsgmmcrrcf
+
 
 ### 使用技術
 - Next.js
@@ -24,8 +28,8 @@ https://docs.google.com/document/d/17juWF7GBGzaEiDT-gjs988CC0VPfS1B9bFenDPbJsb0/
 #### 出退勤管理
 - ５種類のボタンを押すとフォームが表示される。
 - 正確に登録することで出勤や退勤等を登録することが出来る
-- リモートワークで登録するとメールが届くようになっている
-- またリモートワークでなくても出勤から８時間経過すると確認のメールが届くようになっている
+- リモートワークで登録するとメールが届くようになっている（本番環境ではエラーが発生したため現在削除）
+- またリモートワークでなくても出勤から８時間経過すると確認のメールが届くようになっている　（本番環境ではエラーが発生したため現在削除）
 <img width="1127" alt="スクリーンショット 2024-01-30 131947" src="https://github.com/TaiGa02/book-gather/assets/135023031/e57fa5e3-a33f-4959-a3d3-cc344c43a344">
 <img width="1128" alt="スクリーンショット 2024-01-30 132007" src="https://github.com/TaiGa02/book-gather/assets/135023031/9b251bad-7092-4a16-95fd-ff1f46f3a2dc">
 
